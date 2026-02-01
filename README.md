@@ -30,4 +30,16 @@ Windows:
     cd gryphon
 ```
 
-2. Generate Makefile (Linux) or Visual Studio Solution (Windows)
+2. Generate build files.
+
+```bash
+    mkdir build && cd build
+    cmake ..
+```
+
+> [!NOTE]
+> To build the test binary I use for development:
+
+```bash
+    cmake -DBUILD_TEST_APP=on ..
+```

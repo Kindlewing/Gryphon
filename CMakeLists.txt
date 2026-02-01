@@ -84,7 +84,7 @@ target_compile_options(gryphon PRIVATE
 # -------------------------------
 # In-tree test binary
 # -------------------------------
-option(BUILD_TEST_APP "Build Gryphon test binary" ON)
+option(BUILD_TEST_APP "Build Gryphon test binary" OFF)
 
 if(BUILD_TEST_APP AND EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/tests/main.c")
     add_executable(gry_test tests/main.c)
