@@ -4,8 +4,8 @@
 #include "string8.h"
 #include "profile.h"
 #include "base_math.h"
-#include "gryphon/gryphon.h"
-#include "gryphon/render/shader.h"
+#include "gryphon.h"
+#include "render/shader.h"
 
 #define WINDOW_W 1200
 #define WINDOW_H 1200
