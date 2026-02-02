@@ -1,5 +1,5 @@
-#include "base/profile.h"
-#include "base/typedefs.h"
+#include "profile.h"
+#include "typedefs.h"
 #include <stdio.h>
 
 static profiler global_prof;

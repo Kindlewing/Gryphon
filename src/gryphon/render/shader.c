@@ -1,5 +1,5 @@
-#include "gryphon/render/shader.h"
-#include "base/typedefs.h"
+#include "render/shader.h"
+#include "typedefs.h"
 #include "glad.h"
 #include <fcntl.h>
 #include <stdio.h>

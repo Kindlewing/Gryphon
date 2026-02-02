@@ -1,7 +1,7 @@
 #ifndef PROFILE_H
 #define PROFILE_H
-#include "base/string8.h"
-#include "base/typedefs.h"
+#include "string8.h"
+#include "typedefs.h"
 
 #define PROFILE_MAX_ANCHORS 4096
 

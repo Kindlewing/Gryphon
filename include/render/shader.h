@@ -1,8 +1,8 @@
 #ifndef SHADER_H
 #define SHADER_H
 
-#include "base/string8.h"
-#include "base/typedefs.h"
+#include "string8.h"
+#include "typedefs.h"
 
 typedef struct {
 	u32 id;

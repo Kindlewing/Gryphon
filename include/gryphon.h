@@ -1,7 +1,7 @@
 #ifndef GRYPHON_H
 #define GRYPHON_H
-#include "base/arena.h"
-#include "base/string8.h"
+#include "arena.h"
+#include "string8.h"
 
 typedef enum {
 	E_SUCCESS,

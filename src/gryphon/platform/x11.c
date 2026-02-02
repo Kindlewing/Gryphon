@@ -1,9 +1,9 @@
 #include "gryphon/platform/x11.h"
 #include "glad.h"
 #include "GL/glx.h"
-#include "base/arena.h"
-#include "base/profile.h"
-#include "base/string8.h"
+#include "arena.h"
+#include "profile.h"
+#include "string8.h"
 #include "gryphon/gryphon.h"
 #include <X11/X.h>
 #include <X11/Xlib.h>

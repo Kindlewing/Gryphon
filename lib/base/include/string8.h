@@ -1,7 +1,7 @@
 #ifndef STRING8_H
 #define STRING8_H
-#include "base/arena.h"
-#include "base/typedefs.h"
+#include "arena.h"
+#include "typedefs.h"
 
 #define STRING8_MAX 1024
 

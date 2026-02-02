@@ -1,5 +1,5 @@
-#include "base/string8.h"
-#include "base/arena.h"
+#include "string8.h"
+#include "arena.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
