@@ -4,7 +4,7 @@
 #include "glad.h"
 
 #if defined(__linux__)
-#include "gryphon/platform/x11.h"
+#include "platform/x11.h"
 #else
 #error "Unsupported platform"
 #endif

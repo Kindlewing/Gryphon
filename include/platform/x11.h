@@ -1,7 +1,7 @@
 #include "arena.h"
 #include "string8.h"
 #include "typedefs.h"
-#include "gryphon/gryphon.h"
+#include "gryphon.h"
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
