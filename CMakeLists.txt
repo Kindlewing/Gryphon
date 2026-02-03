@@ -11,6 +11,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 add_library(Gryphon STATIC)
 add_library(Glad STATIC)
 
+
 find_package(OpenGL REQUIRED)
 
 # Gryphon sources
@@ -45,15 +46,21 @@ target_sources(Glad
 add_subdirectory(lib/base)
 
 if(BUILD_EXAMPLE)
+	# Create a small interface target for Glad headers
+	add_library(GladHeaders INTERFACE)
+	target_include_directories(GladHeaders INTERFACE
+		${CMAKE_CURRENT_SOURCE_DIR}/third_party/glad/include
+	)
 	add_subdirectory(examples)
 endif()
 
 if(UNIX AND NOT APPLE)
 	find_package(X11 REQUIRED)
-	target_link_libraries(Gryphon
-								PRIVATE
-			X11::X11
-				)
+	target_link_libraries(
+		Gryphon
+		PRIVATE
+		X11::X11
+	)
 endif()
 
 # Link everything
