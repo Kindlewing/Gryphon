@@ -8,5 +8,5 @@ target_sources(example
 target_link_libraries(example 
 	PRIVATE
 	Gryphon 
-	Glad
+	OpenGL::GL
 )

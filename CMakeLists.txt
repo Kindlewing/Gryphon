@@ -31,7 +31,7 @@ target_sources(Gryphon
 )
 # Glad sources
 target_sources(Glad
-	PUBLIC
+	PRIVATE
 		third_party/glad/src/glad.c
 	PUBLIC
 		FILE_SET HEADERS
@@ -52,7 +52,7 @@ if(UNIX AND NOT APPLE)
     find_package(X11 REQUIRED)
     target_link_libraries(Gryphon
         PRIVATE
-            ${X11_LIBRARIES}
+			X11::X11
     )
 endif()
 
