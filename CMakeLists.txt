@@ -49,18 +49,18 @@ if(BUILD_EXAMPLE)
 endif()
 
 if(UNIX AND NOT APPLE)
-    find_package(X11 REQUIRED)
-    target_link_libraries(Gryphon
-        PRIVATE
+	find_package(X11 REQUIRED)
+	target_link_libraries(Gryphon
+								PRIVATE
 			X11::X11
-    )
+				)
 endif()
 
 # Link everything
-target_link_libraries(Gryphon 
-	PUBLIC 
-	Base 
-	PRIVATE 
+target_link_libraries(Gryphon
+	PUBLIC
+	Base
+	PRIVATE
 	Glad
 	OpenGL::GL
 )
