@@ -12,7 +12,6 @@
 
 int main(void) {
 	begin_profile();
-	begin_time_function;
 	arena *engine_arena = arena_create(KiB(64));
 	string8 title = string8_lit("Spark Engine");
 	gry_window *window = gry_create_window(engine_arena, WINDOW_W, WINDOW_H, title);
@@ -60,7 +59,6 @@ int main(void) {
 	glUseProgram(s.id);
 
 	while(!gry_window_should_close(window)) {
-		begin_time_block("Game Loop");
 		gry_poll_events(window);
 		glClearColor(33.0 / 255.0, 33.0 / 255.0, 33.0 / 255.0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -69,11 +67,8 @@ int main(void) {
 		glBindVertexArray(vertex_array);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 		gry_swap_buffers(window);
-		end_time_block;
 	}
 
 	gry_close_window(window);
-	end_time_function;
-	end_profile();
 	return 0;
 }
