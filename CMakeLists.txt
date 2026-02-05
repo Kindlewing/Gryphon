@@ -5,18 +5,10 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-option(BUILD_EXAMPLE "Build the example projects" OFF)
-
-add_executable(gryphon)
-target_sources(gryphon
-	PRIVATE
-	src/main.c
-)
-
-
 add_library(Gryphon STATIC)
 add_library(Glad STATIC)
 
+option(DEV "Build the dev project" OFF)
 
 find_package(OpenGL REQUIRED)
 
@@ -51,6 +43,10 @@ target_sources(Glad
 # Add our base layer
 add_subdirectory(lib/base)
 
+if(DEV)
+	add_subdirectory(dev)
+endif()
+
 
 if(UNIX AND NOT APPLE)
 	find_package(X11 REQUIRED)
@@ -69,4 +65,3 @@ target_link_libraries(Gryphon
 	Glad
 	OpenGL::GL
 )
-target_link_libraries(gryphon PRIVATE Gryphon Glad)
