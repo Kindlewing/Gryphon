@@ -3,7 +3,6 @@
 #include "macros.h"
 #include "string8.h"
 #include "profile.h"
-#include "base_math.h"
 #include "gryphon.h"
 #include "render/shader.h"
 
@@ -57,6 +56,7 @@ int main(void) {
 	string8 f_path = string8_lit("assets/shaders/fragment.glsl");
 	shader_init(shader_arena, &s, v_path, f_path);
 	glUseProgram(s.id);
+	arena_free(shader_arena);
 
 	while(!gry_window_should_close(window)) {
 		gry_poll_events(window);

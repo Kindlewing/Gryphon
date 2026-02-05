@@ -15,9 +15,9 @@ find_package(OpenGL REQUIRED)
 # Gryphon sources
 target_sources(Gryphon
 	PRIVATE
-		src/gryphon/gryphon.c
-		src/gryphon/platform/x11.c
-		src/gryphon/render/shader.c
+		src/gryphon.c
+		src/platform/x11.c
+		src/render/shader.c
 	PUBLIC
 		FILE_SET HEADERS
 		BASE_DIRS
