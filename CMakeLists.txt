@@ -40,6 +40,13 @@ target_sources(Glad
 			third_party/glad/include/glad.h
 			third_party/glad/include/KHR/khrplatform.h
 )
+
+target_compile_options(
+	Gryphon
+	PRIVATE
+	$<$<CONFIG:Debug>:-Wall -Wextra -g -O0>
+)
+
 # Add our base layer
 add_subdirectory(lib/base)
 

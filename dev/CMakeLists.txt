@@ -6,4 +6,10 @@ target_sources(dev
 	PRIVATE
 	src/main.c
 )
+
+target_compile_optinos(
+	dev
+	PRIVATE
+	$<$<CONFIG:Debug>:-Wall -Wextra -g -O0>
+)
 target_link_libraries(dev PRIVATE Gryphon Glad)
