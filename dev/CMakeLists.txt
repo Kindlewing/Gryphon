@@ -7,7 +7,7 @@ target_sources(dev
 	src/main.c
 )
 
-target_compile_optinos(
+target_compile_options(
 	dev
 	PRIVATE
 	$<$<CONFIG:Debug>:-Wall -Wextra -g -O0>
