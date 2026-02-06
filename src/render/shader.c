@@ -15,7 +15,6 @@ static inline void gl_shader_source_string8(GLuint shader, string8 src) {
 
 b8 shader_init(arena *a, shader *s, string8 vertex_path, string8 fragment_path) {
 	scratch_arena scr = scratch_begin(a);
-
 	i32 vertex_fd = open((char *)vertex_path.data, O_RDONLY);
 	i32 fragment_fd = open((char *)fragment_path.data, O_RDONLY);
 
