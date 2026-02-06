@@ -5,6 +5,7 @@
 #include "profile.h"
 #include "gryphon.h"
 #include "render/shader.h"
+#include <unistd.h>
 
 #define WINDOW_W 1200
 #define WINDOW_H 1200
@@ -50,13 +51,13 @@ int main(void) {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	// shaders
-	arena *shader_arena = arena_create(KiB(500));
 	shader s;
 	string8 v_path = string8_lit("assets/shaders/vertex.glsl");
 	string8 f_path = string8_lit("assets/shaders/fragment.glsl");
-	shader_init(shader_arena, &s, v_path, f_path);
+	if(!shader_init(engine_arena, &s, v_path, f_path)) {
+		return -1;
+	}
 	glUseProgram(s.id);
-	arena_free(shader_arena);
 
 	while(!gry_window_should_close(window)) {
 		gry_poll_events(window);
