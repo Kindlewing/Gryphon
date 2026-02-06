@@ -29,6 +29,7 @@ int main(void) {
 		 0.5f, -0.5f, 0.0f // bottom right
 
 	};
+
 	u32 indices[] = {
 		0, 1, 2
 	};
