@@ -9,7 +9,6 @@
 static inline void gl_shader_source_string8(GLuint shader, string8 src) {
 	const GLchar *s = (const GLchar *)src.data;
 	GLint len = (GLint)src.length;
-
 	glShaderSource(shader, 1, &s, &len);
 }
 

@@ -3,11 +3,6 @@
 #include "arena.h"
 #include "string8.h"
 
-typedef enum {
-	E_SUCCESS,
-	E_WINDOW,
-} gry_error;
-
 typedef struct gry_window gry_window;
 
 gry_window *gry_create_window(arena *a, u32 width, u32 height, string8 title);
