@@ -1,6 +1,7 @@
 #include "glad.h"
 #include "profile.h"
 #include "gryphon.h"
+#include "string8.h"
 #include <unistd.h>
 
 #define W 1200
@@ -57,6 +58,7 @@ int main(void) {
 	glUseProgram(s.id);
 
 	while(!gryphon_window_should_close(window)) {
+		begin_time_block("main loop");
 		gryphon_poll_events(window);
 		glClearColor(33.0 / 255.0, 33.0 / 255.0, 33.0 / 255.0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
@@ -65,6 +67,7 @@ int main(void) {
 		glBindVertexArray(vertex_array);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
 		gryphon_swap_buffers(window);
+		end_time_block;
 	}
 
 	gryphon_close_window(window);
@@ -72,5 +75,6 @@ int main(void) {
 	glDeleteBuffers(1, &vertex_buffer);
 	glDeleteBuffers(1, &index_buffer);
 	arena_free(engine_arena);
+	end_profile();
 	return 0;
 }

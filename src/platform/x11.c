@@ -57,7 +57,6 @@ static GLXContext x11_create_core_ctx(Display *dpy, GLXFBConfig fb_cfg) {
 }
 
 gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
-	begin_time_function;
 	Display *dpy = XOpenDisplay(NULL);
 	if(dpy == NULL) {
 		x11_err(string8_lit("X Display could not be created\n"));
@@ -148,7 +147,6 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	win->should_close = false;
 	XMapWindow(win->dpy, win->x_window);
 	XStoreName(win->dpy, win->x_window, (char *)title.data);
-	end_time_function;
 	return win;
 }
 
