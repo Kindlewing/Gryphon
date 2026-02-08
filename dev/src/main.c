@@ -10,7 +10,8 @@ int main(void) {
 	begin_profile();
 	arena *engine_arena = arena_create(KiB(64));
 	string8 title = string8_lit("Spark Engine");
-	gry_window *window = gry_create_window(engine_arena, WINDOW_W, WINDOW_H, title);
+	gryphon_window *window =
+			gryphon_create_window(engine_arena, WINDOW_W, WINDOW_H, title);
 
 	if(window == NULL) {
 		string8 err = string8_lit("An error occured: cannot open display.\n");
@@ -56,17 +57,17 @@ int main(void) {
 	}
 	glUseProgram(s.id);
 
-	while(!gry_window_should_close(window)) {
-		gry_poll_events(window);
+	while(!gryphon_window_should_close(window)) {
+		gryphon_poll_events(window);
 		glClearColor(33.0 / 255.0, 33.0 / 255.0, 33.0 / 255.0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(s.id);
 		glBindVertexArray(vertex_array);
 		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
-		gry_swap_buffers(window);
+		gryphon_swap_buffers(window);
 	}
 
-	gry_close_window(window);
+	gryphon_close_window(window);
 	return 0;
 }

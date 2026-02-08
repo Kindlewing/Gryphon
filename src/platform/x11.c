@@ -10,7 +10,7 @@
 #include <X11/Xutil.h>
 #include <unistd.h>
 
-struct gry_window {
+struct gryphon_window {
 	Display *dpy;
 	Window x_window;
 	XEvent event;
@@ -56,7 +56,7 @@ static GLXContext x11_create_core_ctx(Display *dpy, GLXFBConfig fb_cfg) {
 	return ctx;
 }
 
-gry_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
+gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	begin_time_function;
 	Display *dpy = XOpenDisplay(NULL);
 	if(dpy == NULL) {
@@ -64,7 +64,7 @@ gry_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 		return NULL;
 	}
 
-	gry_window *win = arena_push_struct_zero(a, gry_window);
+	gryphon_window *win = arena_push_struct_zero(a, gryphon_window);
 	u32 screen = DefaultScreen(dpy);
 	Window root = DefaultRootWindow(dpy);
 
@@ -152,7 +152,7 @@ gry_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	return win;
 }
 
-void platform_poll_events(gry_window *win) {
+void platform_poll_events(gryphon_window *win) {
 	while(XPending(win->dpy)) {
 		XNextEvent(win->dpy, &win->event);
 		switch(win->event.type) {
@@ -164,15 +164,15 @@ void platform_poll_events(gry_window *win) {
 	}
 }
 
-b8 platform_window_should_close(gry_window *win) {
+b8 platform_window_should_close(gryphon_window *win) {
 	return win->should_close;
 }
 
-void platform_swap_buffers(gry_window *win) {
+void platform_swap_buffers(gryphon_window *win) {
 	glXSwapBuffers(win->dpy, win->x_window);
 }
 
-void platform_close_window(gry_window *win) {
+void platform_close_window(gryphon_window *win) {
 	XUnmapWindow(win->dpy, win->x_window);
 	XDestroyWindow(win->dpy, win->x_window);
 }
