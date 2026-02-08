@@ -1,10 +1,6 @@
 #include "glad.h"
-#include "arena.h"
-#include "macros.h"
-#include "string8.h"
 #include "profile.h"
 #include "gryphon.h"
-#include "render/shader.h"
 #include <unistd.h>
 
 #define WINDOW_W 1200

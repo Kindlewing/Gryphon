@@ -2,6 +2,9 @@
 #define GRYPHON_H
 #include "arena.h"
 #include "string8.h"
+#include "render/renderer.h"
+#include "render/shader.h"
+#include "macros.h"
 
 typedef struct gry_window gry_window;
 
