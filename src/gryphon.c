@@ -21,8 +21,8 @@ b8 gryphon_window_should_close(gryphon_window *win) {
 	return platform_window_should_close(win);
 }
 
-void gryphon_swap_buffers(gryphon_window *window) {
-	platform_swap_buffers(window);
+void gryphon_swap_buffers(gryphon_window *win) {
+	platform_swap_buffers(win);
 }
 
 void gryphon_close_window(gryphon_window *win) {

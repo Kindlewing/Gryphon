@@ -3,15 +3,14 @@
 #include "gryphon.h"
 #include <unistd.h>
 
-#define WINDOW_W 1200
-#define WINDOW_H 1200
+#define W 1200
+#define H 1200
 
 int main(void) {
 	begin_profile();
 	arena *engine_arena = arena_create(KiB(64));
 	string8 title = string8_lit("Spark Engine");
-	gryphon_window *window =
-			gryphon_create_window(engine_arena, WINDOW_W, WINDOW_H, title);
+	gryphon_window *window = gryphon_create_window(engine_arena, W, H, title);
 
 	if(window == NULL) {
 		string8 err = string8_lit("An error occured: cannot open display.\n");
@@ -69,5 +68,9 @@ int main(void) {
 	}
 
 	gryphon_close_window(window);
+	glDeleteVertexArrays(1, &vertex_array);
+	glDeleteBuffers(1, &vertex_buffer);
+	glDeleteBuffers(1, &index_buffer);
+	arena_free(engine_arena);
 	return 0;
 }
