@@ -24,13 +24,13 @@ int main(void) {
 		-0.5f, -0.5f, 0.0f,  // bottom left;
 		 0.0f,  0.5f, 0.0f, // top middle,
 		 0.5f, -0.5f, 0.0f // bottom right
-
 	};
 
 	u32 indices[] = {
 		0, 1, 2
 	};
 	// clang-format on
+
 	u32 vertex_array;
 	glGenVertexArrays(1, &vertex_array);
 	glBindVertexArray(vertex_array);

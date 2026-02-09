@@ -1,4 +1,4 @@
-typedef struct renderer_t {
+typedef struct renderer {
 
 } renderer;
 
