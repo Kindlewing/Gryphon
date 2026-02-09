@@ -2,5 +2,6 @@ typedef struct renderer {
 
 } renderer;
 
-void gryphon_begin_render();
-void gryphon_end_render();
+renderer renderer_create();
+void render_begin(renderer *r);
+void render_end(renderer *r);

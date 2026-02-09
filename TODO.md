@@ -6,6 +6,8 @@
 - [ ] hashmap?
 - [x] profiling
   - [ ] make this better
+
+- [ ] rendering
 - [ ] x11 input handling
 - [ ] I'm sure there's more x11 stuff I'm missing
 - [ ] windows support
