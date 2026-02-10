@@ -44,7 +44,7 @@ static render_pipeline create_pipeline(arena *a, f32 *vertices, u32 vertex_count
 	return p;
 }
 
-renderer renderer_create(arena *a) {
+renderer renderer_create(arena *a, u32 fb_width, u32 fb_height) {
 	renderer r = {0};
 	// clang-format off
 	f32 triangle_vertices[] = {
@@ -77,15 +77,26 @@ renderer renderer_create(arena *a) {
 	r.quad_pipeline = create_pipeline(a, quad_vertices, 12, quad_indices, 6,
 										  string8_lit("shaders/vertex.glsl"),
 										  string8_lit("shaders/fragment.glsl"));
-
+	r.width = fb_width;
+	r.height = fb_height;
 	// clang-format on
 	return r;
 }
 
 void render_begin(renderer *r) {
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, r->width, r->height);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void render_clear(renderer *r, vector4f32 color) {
+void render_triangle(renderer *r, vector2f32 pos, f32 w, f32 h) {
+	glUseProgram(r->triangle_pipeline.shader_program);
+	glBindVertexArray(r->triangle_pipeline.vertex_array);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+}
+
+void render_clear(vector4f32 color) {
 	glClearColor(color.r / 255.0, color.g / 255.0, color.b / 255.0, color.a / 255.0);
 	glClear(GL_COLOR_BUFFER_BIT);
 }

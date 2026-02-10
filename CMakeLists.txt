@@ -18,6 +18,7 @@ target_sources(Gryphon
 		src/gryphon.c
 		src/platform/x11.c
 		src/render/shader.c
+		src/render/renderer.c
 	PUBLIC
 		FILE_SET HEADERS
 		BASE_DIRS
@@ -27,6 +28,7 @@ target_sources(Gryphon
 			include/platform/platform.h
 			include/platform/x11.h
 			include/render/shader.h
+			include/render/renderer.h
 )
 # Glad sources
 target_sources(Glad

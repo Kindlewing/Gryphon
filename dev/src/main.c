@@ -1,3 +1,4 @@
+#include "base_math.h"
 #include "glad.h"
 #include "profile.h"
 #include "gryphon.h"
@@ -19,23 +20,20 @@ int main(void) {
 		return -1;
 	}
 
-	// shaders
+	renderer renderer = renderer_create(engine_arena, W, H);
 
 	while(!gryphon_window_should_close(window)) {
 		begin_time_block("main loop");
 		gryphon_poll_events(window);
+		render_clear((vector4f32){33.0, 33.0, 33.0, 1.0});
 
-		glUseProgram(s.id);
-		glBindVertexArray(triangle_vao);
-		glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+		render_triangle(&renderer, (vector2f32){2.0f, 4.0f}, 20.0f, 20.0f);
+
 		gryphon_swap_buffers(window);
 		end_time_block;
 	}
 
 	gryphon_close_window(window);
-	glDeleteVertexArrays(1, &triangle_vao);
-	glDeleteBuffers(1, &triangle_vbo);
-	glDeleteBuffers(1, &triangle_idx_buffer);
 	arena_free(engine_arena);
 	end_profile();
 	return 0;
