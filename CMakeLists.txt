@@ -7,16 +7,20 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 
 add_library(Gryphon STATIC)
-add_library(Glad OBJECT)
+add_library(Glad STATIC)
 
 
 if(NOT CMAKE_BUILD_TYPE)
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+	set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
 endif()
 
 option(DEV "Build the dev project" OFF)
 
 find_package(OpenGL REQUIRED)
+
+if(UNIX AND NOT APPLE)
+	find_package(X11 REQUIRED)
+endif()
 
 # Gryphon sources
 target_sources(Gryphon
@@ -37,7 +41,7 @@ target_include_directories(Gryphon PUBLIC include)
 target_include_directories(Glad PUBLIC third_party/glad/include)
 
 target_compile_options(Gryphon PRIVATE
-    $<$<CONFIG:Debug>:-Wall;-Wextra;-g;-O0>
+				$<$<CONFIG:Debug>:-Wall;-Wextra;-g;-O0>
 )
 
 # Add our base layer
@@ -48,11 +52,19 @@ if(DEV)
 endif()
 
 
+
+
+target_include_directories(Glad PUBLIC third_party/glad/include)
+
 target_link_libraries(Gryphon
-    PUBLIC
-        Base
-    PRIVATE
-		$<TARGET_OBJECTS:Glad>
-        OpenGL::GL
-        $<$<PLATFORM_ID:Linux>:X11::X11>
+	PUBLIC
+		Base
+	PRIVATE
+		Glad
+		OpenGL::GL
 )
+
+
+if(UNIX AND NOT APPLE)
+	target_link_libraries(Gryphon PRIVATE X11::X11)
+endif()
