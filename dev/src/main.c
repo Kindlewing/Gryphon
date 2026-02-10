@@ -60,6 +60,7 @@ int main(void) {
 	while(!gryphon_window_should_close(window)) {
 		begin_time_block("main loop");
 		gryphon_poll_events(window);
+
 		glClearColor(33.0 / 255.0, 33.0 / 255.0, 33.0 / 255.0, 1);
 		glClear(GL_COLOR_BUFFER_BIT);
 
