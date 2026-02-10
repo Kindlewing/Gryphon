@@ -3,7 +3,7 @@
 #include "stdio.h"
 #include <glad.h>
 
-static render_pipeline create_pipeline(arena *a, f32 *vertices, u32 vertex_count,
+static render_pipeline pipeline_create(arena *a, f32 *vertices, u32 vertex_count,
 									   u32 *indices, u32 index_count,
 									   string8 vert_shader_path,
 									   string8 frag_shader_path) {
@@ -57,10 +57,11 @@ renderer renderer_create(arena *a, u32 fb_width, u32 fb_height) {
 		0, 1, 2
 	};
 	// clang-format on
+	string8 vertex_shader_source = string8_lit("shaders/vertex.glsl");
+	string8 frag_shader_source = string8_lit("shaders/fragment.glsl");
 
-	r.triangle_pipeline = create_pipeline(a, triangle_vertices, 9, triangle_indices, 3,
-										  string8_lit("shaders/vertex.glsl"),
-										  string8_lit("shaders/fragment.glsl"));
+	r.triangle_pipeline = pipeline_create(a, triangle_vertices, 9, triangle_indices, 3,
+										  vertex_shader_source, frag_shader_source);
 	// clang-format off
 	f32 quad_vertices[] = {
 		 0.5f,  0.5f, 0.0f,  // top right
@@ -74,12 +75,11 @@ renderer renderer_create(arena *a, u32 fb_width, u32 fb_height) {
 		1, 2, 3
 	};
 
-	r.quad_pipeline = create_pipeline(a, quad_vertices, 12, quad_indices, 6,
-										  string8_lit("shaders/vertex.glsl"),
-										  string8_lit("shaders/fragment.glsl"));
+	// clang-format on
+	r.quad_pipeline = pipeline_create(a, quad_vertices, 12, quad_indices, 6,
+									  vertex_shader_source, frag_shader_source);
 	r.width = fb_width;
 	r.height = fb_height;
-	// clang-format on
 	return r;
 }
 
