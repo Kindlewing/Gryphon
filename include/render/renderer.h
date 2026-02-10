@@ -2,7 +2,7 @@
 #define RENDERER_H
 
 #include "arena.h"
-#include "base_math.h"
+#include "linalg.h"
 
 typedef struct render_pipeline {
 	u32 vertex_buffer;

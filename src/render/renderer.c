@@ -4,9 +4,8 @@
 #include <glad.h>
 
 static render_pipeline pipeline_create(arena *a, f32 *vertices, u32 vertex_count,
-									   u32 *indices, u32 index_count,
-									   string8 vert_shader_path,
-									   string8 frag_shader_path) {
+									   u32 *indices, u32 index_count, string8 vertex_path,
+									   string8 fragment_path) {
 	render_pipeline p = {0};
 
 	u32 vao;
@@ -22,15 +21,13 @@ static render_pipeline pipeline_create(arena *a, f32 *vertices, u32 vertex_count
 	glEnableVertexAttribArray(0);
 
 	u32 idx_buffer = 0;
-	if(indices) {
-		glGenBuffers(1, &idx_buffer);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buffer);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(u32) * index_count, indices,
-					 GL_STATIC_DRAW);
-	}
+	glGenBuffers(1, &idx_buffer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, idx_buffer);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(u32) * index_count, indices,
+				 GL_STATIC_DRAW);
 
 	shader s;
-	if(!shader_init(a, &s, vert_shader_path, frag_shader_path)) {
+	if(!shader_init(a, &s, vertex_path, fragment_path)) {
 		fprintf(stderr, "Failed to load shader!\n");
 		exit(EXIT_FAILURE);
 	}
@@ -38,9 +35,8 @@ static render_pipeline pipeline_create(arena *a, f32 *vertices, u32 vertex_count
 	p.vertex_array = vao;
 	p.vertex_buffer = vbo;
 	p.idx_buffer = idx_buffer;
-	p.vertex_count = index_count ? index_count : vertex_count / 3;
+	p.vertex_count = index_count;
 	p.shader_program = s.id;
-
 	return p;
 }
 

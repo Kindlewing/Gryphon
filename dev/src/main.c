@@ -1,6 +1,6 @@
-#include "base_math.h"
 #include "glad.h"
 #include "profile.h"
+#include "linalg.h"
 #include "gryphon.h"
 #include "string8.h"
 #include <unistd.h>
