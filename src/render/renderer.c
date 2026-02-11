@@ -99,7 +99,13 @@ void render_begin(renderer *r) {
 }
 
 void render_triangle(renderer *r, vector2f32 pos, f32 w, f32 h) {
-	glUseProgram(r->triangle_pipeline.shader_program);
+	u32 shader_id = r->triangle_pipeline.shader_program;
+	glUseProgram(shader_id);
+	u32 transformm_loc = glGetUniformLocation(shader_id, "transform");
+
+	mat4x4f32 trans = mat4x4f32_identity();
+
+	glUniformMatrix4fv(transformm_loc, 1, false, );
 	glBindVertexArray(r->triangle_pipeline.vertex_array);
 	glDrawElements(GL_TRIANGLES, r->triangle_pipeline.vertex_count, GL_UNSIGNED_INT, 0);
 }
