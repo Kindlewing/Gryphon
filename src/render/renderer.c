@@ -79,6 +79,8 @@ renderer renderer_create(arena *a, gryphon_window *win) {
 	r.win = win;
 	u32 width = gryphon_window_width(r.win);
 	u32 height = gryphon_window_height(r.win);
+
+	// set the default framebuffer
 	render_set_framebuffer(&r, 0, width, height);
 	return r;
 }
@@ -99,7 +101,13 @@ void render_begin(renderer *r) {
 void render_triangle(renderer *r, vector2f32 pos, f32 w, f32 h) {
 	glUseProgram(r->triangle_pipeline.shader_program);
 	glBindVertexArray(r->triangle_pipeline.vertex_array);
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, r->triangle_pipeline.vertex_count, GL_UNSIGNED_INT, 0);
+}
+
+void render_quad(renderer *r, vector2f32 pos, f32 w, f32 h) {
+	glUseProgram(r->quad_pipeline.shader_program);
+	glBindVertexArray(r->quad_pipeline.vertex_array);
+	glDrawElements(GL_TRIANGLES, r->quad_pipeline.vertex_count, GL_UNSIGNED_INT, 0);
 }
 
 void render_clear(vector4f32 color) {

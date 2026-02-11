@@ -146,7 +146,6 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	win->should_close = false;
 	XMapWindow(win->dpy, win->x_window);
 	XStoreName(win->dpy, win->x_window, (char *)title.data);
-	printf("size of window: %lu bytes\n", sizeof *win);
 	return win;
 }
 

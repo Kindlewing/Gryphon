@@ -28,13 +28,13 @@ int main(void) {
 
 		arena_clear(frame_arena);
 		gryphon_poll_events(window);
-
 		render_begin(&renderer);
+
 		render_clear((vector4f32){33.0, 33.0, 33.0, 1.0});
-
 		render_triangle(&renderer, (vector2f32){2.0f, 4.0f}, 20.0f, 20.0f);
+		render_quad(&renderer, (vector2f32){4.0f, 3.0f}, 20.0f, 20.0f);
 
-		gryphon_swap_buffers(window);
+		render_end(&renderer);
 		end_time_block;
 	}
 
