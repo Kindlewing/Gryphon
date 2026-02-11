@@ -41,6 +41,6 @@ int main(void) {
 	gryphon_close_window(window);
 	arena_free(engine_arena);
 	arena_free(frame_arena);
-	end_profile();
+	end_profile(true);
 	return 0;
 }
