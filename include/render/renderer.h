@@ -2,6 +2,7 @@
 #define RENDERER_H
 
 #include "arena.h"
+#include "gryphon.h"
 #include "linalg.h"
 
 typedef struct render_pipeline {
@@ -16,13 +17,25 @@ typedef struct renderer {
 	render_pipeline triangle_pipeline;
 	render_pipeline quad_pipeline;
 
+	vector4f32 clear_color;
+
 	u32 framebuffer;
-	u32 width;
-	u32 height;
+	u32 framebuffer_width;
+	u32 framebuffer_height;
+
+	gryphon_window *win;
 } renderer;
 
-renderer renderer_create(arena *a, u32 fb_width, u32 fb_height);
+typedef struct vertex {
+	f32 x;
+	f32 y;
+	f32 z;
+} vertex;
+
+renderer renderer_create(arena *a, gryphon_window *win);
 void render_begin(renderer *r);
+void render_set_clear_color(renderer *r);
+void render_set_framebuffer(renderer *r, u32 framebuffer, u32 w, u32 h);
 void render_triangle(renderer *r, vector2f32 pos, f32 w, f32 h);
 void render_clear(vector4f32 color);
 void render_end(renderer *r);

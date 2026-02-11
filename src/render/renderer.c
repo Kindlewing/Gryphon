@@ -1,9 +1,11 @@
 #include "render/renderer.h"
+#include "gryphon.h"
 #include "render/shader.h"
+#include "platform/platform.h"
 #include "stdio.h"
 #include <glad.h>
 
-static render_pipeline pipeline_create(arena *a, f32 *vertices, u32 vertex_count,
+static render_pipeline pipeline_create(arena *a, vertex *vertices, u32 vertex_count,
 									   u32 *indices, u32 index_count, string8 vertex_path,
 									   string8 fragment_path) {
 	render_pipeline p = {0};
@@ -40,13 +42,13 @@ static render_pipeline pipeline_create(arena *a, f32 *vertices, u32 vertex_count
 	return p;
 }
 
-renderer renderer_create(arena *a, u32 fb_width, u32 fb_height) {
+renderer renderer_create(arena *a, gryphon_window *win) {
 	renderer r = {0};
 	// clang-format off
-	f32 triangle_vertices[] = {
-		-0.5f, -0.5f, 0.0f,  // bottom left;
-		 0.0f,  0.5f, 0.0f, // top middle,
-		 0.5f, -0.5f, 0.0f // bottom right
+	vertex triangle_vertices[] = {
+		{-0.5f, -0.5f, 0.0f},  // bottom left;
+		{ 0.0f,  0.5f, 0.0f}, // top middle,
+		{ 0.5f, -0.5f, 0.0f} // bottom right
 	};
 
 	u32 triangle_indices[] = {
@@ -59,11 +61,11 @@ renderer renderer_create(arena *a, u32 fb_width, u32 fb_height) {
 	r.triangle_pipeline = pipeline_create(a, triangle_vertices, 9, triangle_indices, 3,
 										  vertex_shader_source, frag_shader_source);
 	// clang-format off
-	f32 quad_vertices[] = {
-		 0.5f,  0.5f, 0.0f,  // top right
-		 0.5f, -0.5f, 0.0f,  // bottom right
-		-0.5f, -0.5f, 0.0f,  // bottom left
-		-0.5f,  0.5f, 0.0f   // top left 		   
+	vertex quad_vertices[] = {
+		{ 0.5f,  0.5f, 0.0f },  // top right
+		{ 0.5f, -0.5f, 0.0f },  // bottom right
+		{-0.5f, -0.5f, 0.0f },  // bottom left
+		{-0.5f,  0.5f, 0.0f }   // top left 		   
 	};
 
 	u32 quad_indices[] = {
@@ -74,14 +76,22 @@ renderer renderer_create(arena *a, u32 fb_width, u32 fb_height) {
 	// clang-format on
 	r.quad_pipeline = pipeline_create(a, quad_vertices, 12, quad_indices, 6,
 									  vertex_shader_source, frag_shader_source);
-	r.width = fb_width;
-	r.height = fb_height;
+	r.win = win;
+	u32 width = gryphon_window_width(r.win);
+	u32 height = gryphon_window_height(r.win);
+	render_set_framebuffer(&r, 0, width, height);
 	return r;
 }
 
+void render_set_framebuffer(renderer *r, u32 framebuffer, u32 w, u32 h) {
+	r->framebuffer = framebuffer;
+	r->framebuffer_width = w;
+	r->framebuffer_height = h;
+}
+
 void render_begin(renderer *r) {
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-	glViewport(0, 0, r->width, r->height);
+	glBindFramebuffer(GL_FRAMEBUFFER, r->framebuffer);
+	glViewport(0, 0, r->framebuffer_width, r->framebuffer_height);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
@@ -98,4 +108,5 @@ void render_clear(vector4f32 color) {
 }
 
 void render_end(renderer *r) {
+	platform_swap_buffers(r->win);
 }

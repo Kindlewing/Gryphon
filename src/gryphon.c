@@ -3,14 +3,18 @@
 #include "typedefs.h"
 #include "glad.h"
 
-#if defined(__linux__)
-#include "platform/x11.h"
-#else
-#error "Unsupported platform"
-#endif
+#include "platform/platform.h"
 
 gryphon_window *gryphon_create_window(arena *a, u32 width, u32 height, string8 title) {
 	return platform_create_window(a, width, height, title);
+}
+
+u32 gryphon_window_width(gryphon_window *win) {
+	return platform_window_width(win);
+}
+
+u32 gryphon_window_height(gryphon_window *win) {
+	return platform_window_height(win);
 }
 
 void gryphon_poll_events(gryphon_window *win) {

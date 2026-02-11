@@ -38,7 +38,7 @@ target_sources(Glad
 
 
 target_include_directories(Gryphon PUBLIC include)
-target_include_directories(Glad PUBLIC third_party/glad/include)
+target_include_directories(Glad PRIVATE third_party/glad/include)
 
 target_compile_options(Gryphon PRIVATE
 				$<$<CONFIG:Debug>:-Wall;-Wextra;-g;-O0>

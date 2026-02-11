@@ -2,18 +2,17 @@
 #include "glad.h"
 #include "GL/glx.h"
 #include "arena.h"
-#include "profile.h"
 #include "string8.h"
 #include "gryphon.h"
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <stdio.h>
 #include <unistd.h>
 
 struct gryphon_window {
 	Display *dpy;
 	Window x_window;
-	XEvent event;
 	GLXFBConfig fb_cfg;
 	GLXContext opengl_ctx;
 	XVisualInfo *vi;
@@ -147,19 +146,29 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	win->should_close = false;
 	XMapWindow(win->dpy, win->x_window);
 	XStoreName(win->dpy, win->x_window, (char *)title.data);
+	printf("size of window: %lu bytes\n", sizeof *win);
 	return win;
 }
 
 void platform_poll_events(gryphon_window *win) {
+	XEvent event;
+
 	while(XPending(win->dpy)) {
-		XNextEvent(win->dpy, &win->event);
-		switch(win->event.type) {
+		XNextEvent(win->dpy, &event);
+		switch(event.type) {
 		case KeyPress:
-			if(XLookupKeysym(&win->event.xkey, 0) == XK_Escape) {
+			if(XLookupKeysym(&event.xkey, 0) == XK_Escape) {
 				win->should_close = true;
 			}
 		}
 	}
+}
+
+u32 platform_window_width(gryphon_window *win) {
+	return win->width;
+}
+u32 platform_window_height(gryphon_window *win) {
+	return win->height;
 }
 
 b8 platform_window_should_close(gryphon_window *win) {
