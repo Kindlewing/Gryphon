@@ -1,6 +1,7 @@
 #include "render/renderer.h"
 #include "gryphon.h"
 #include "render/shader.h"
+#include "linalg.h"
 #include "platform/platform.h"
 #include "stdio.h"
 #include <glad.h>
@@ -103,9 +104,10 @@ void render_triangle(renderer *r, vector2f32 pos, f32 w, f32 h) {
 	glUseProgram(shader_id);
 	u32 transformm_loc = glGetUniformLocation(shader_id, "transform");
 
-	mat4x4f32 trans = mat4x4f32_identity();
+	mat4x4f32 trans = mat4f32_identity();
+	trans = mat4f32_scale(trans, (vector3f32){w, h, 1.0});
 
-	glUniformMatrix4fv(transformm_loc, 1, false, );
+	glUniformMatrix4fv(transformm_loc, 1, false, trans.m);
 	glBindVertexArray(r->triangle_pipeline.vertex_array);
 	glDrawElements(GL_TRIANGLES, r->triangle_pipeline.vertex_count, GL_UNSIGNED_INT, 0);
 }
