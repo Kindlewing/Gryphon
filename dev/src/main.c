@@ -31,8 +31,9 @@ int main(void) {
 	arena *frame_arena = arena_create(KiB(8));
 
 	boid *boids = arena_push_array(boids_arena, boid, 32);
+
 	for(i32 i = 0; i < 32; i += 1) {
-		boids[i] = (boid){.pos = (vector2f32){0, 0}};
+		boids[i] = (boid){.pos = (vector2f32){i + 25, i + 20}};
 	}
 
 	while(!gryphon_window_should_close(window)) {
@@ -50,8 +51,8 @@ int main(void) {
 		render_clear((vector4f32){33.0, 33.0, 33.0, 1.0});
 
 		for(i32 i = 0; i < 32; i += 1) {
-			render_triangle(&renderer, (vector3f32){boids[i].pos.x, boids[i].pos.y},
-							20.0f, 40.0f, 0.0f);
+			render_triangle(&renderer, (vector3f32){boids[i].pos.x, boids[i].pos.y, 1.0},
+							-20.0f, -40.0f, 0.0f);
 		}
 
 		render_end(&renderer);
