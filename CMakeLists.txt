@@ -42,6 +42,7 @@ target_include_directories(Glad PRIVATE third_party/glad/include)
 
 target_compile_options(Gryphon PRIVATE
 				$<$<CONFIG:Debug>:-Wall;-Wextra;-g;-O0>
+				$<$<CONFIG:RelWithDebugInfo>:-Wall;-Wextra;-g;-O0>
 )
 
 # Add our base layer

@@ -45,6 +45,15 @@ static render_pipeline pipeline_create(arena *a, vertex *vertices, u32 vertex_co
 
 renderer renderer_create(arena *a, gryphon_window *win) {
 	renderer r = {0};
+	r.win = win;
+	u32 width = gryphon_window_width(r.win);
+	u32 height = gryphon_window_height(r.win);
+	mat4x4f32 projection = mat4f32_ortho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
+	render_data data = {.vertex_path = string8_lit("shaders/vertex.glsl"),
+						.fragment_path = string8_lit("shaders/fragment.glsl"),
+						.projection = projection};
+
+	r.data = data;
 	// clang-format off
 	vertex triangle_vertices[] = {
 		{-0.5f, -0.5f, 0.0f},  // bottom left;
@@ -56,11 +65,9 @@ renderer renderer_create(arena *a, gryphon_window *win) {
 		0, 1, 2
 	};
 	// clang-format on
-	string8 vertex_shader_source = string8_lit("shaders/vertex.glsl");
-	string8 frag_shader_source = string8_lit("shaders/fragment.glsl");
 
 	r.triangle_pipeline = pipeline_create(a, triangle_vertices, 9, triangle_indices, 3,
-										  vertex_shader_source, frag_shader_source);
+										  r.data.vertex_path, r.data.fragment_path);
 	// clang-format off
 	vertex quad_vertices[] = {
 		{ 0.5f,  0.5f, 0.0f },  // top right
@@ -76,11 +83,7 @@ renderer renderer_create(arena *a, gryphon_window *win) {
 
 	// clang-format on
 	r.quad_pipeline = pipeline_create(a, quad_vertices, 12, quad_indices, 6,
-									  vertex_shader_source, frag_shader_source);
-	r.win = win;
-	u32 width = gryphon_window_width(r.win);
-	u32 height = gryphon_window_height(r.win);
-
+									  r.data.vertex_path, r.data.fragment_path);
 	// set the default framebuffer
 	render_set_framebuffer(&r, 0, width, height);
 	return r;
@@ -99,22 +102,34 @@ void render_begin(renderer *r) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void render_triangle(renderer *r, vector2f32 pos, f32 w, f32 h, f32 rot) {
+void render_triangle(renderer *r, vector3f32 pos, f32 w, f32 h, f32 rot) {
 	u32 shader_id = r->triangle_pipeline.shader_program;
 	glUseProgram(shader_id);
 	u32 transformm_loc = glGetUniformLocation(shader_id, "transform");
 
 	mat4x4f32 trans = mat4f32_identity();
+	trans = mat4f32_translate(trans, pos);
 	trans = mat4f32_rotate(trans, (vector3f32){0.0f, 0.0f, 1.0f}, rot);
-	trans = mat4f32_scale(trans, (vector3f32){w, h, 1.0});
+	trans = mat4f32_scale(trans, (vector3f32){w, h, 1.0f});
+	mat4x4f32 final = mat4f32_mul(r->data.projection, trans);
 
-	glUniformMatrix4fv(transformm_loc, 1, false, trans.m);
+	glUniformMatrix4fv(transformm_loc, 1, false, final.m);
 	glBindVertexArray(r->triangle_pipeline.vertex_array);
 	glDrawElements(GL_TRIANGLES, r->triangle_pipeline.vertex_count, GL_UNSIGNED_INT, 0);
 }
 
-void render_quad(renderer *r, vector2f32 pos, f32 w, f32 h) {
+void render_quad(renderer *r, vector3f32 pos, f32 w, f32 h, f32 rot) {
+	u32 shader_id = r->triangle_pipeline.shader_program;
 	glUseProgram(r->quad_pipeline.shader_program);
+
+	u32 transformm_loc = glGetUniformLocation(shader_id, "transform");
+	mat4x4f32 trans = mat4f32_identity();
+	trans = mat4f32_translate(trans, pos);
+	trans = mat4f32_rotate(trans, (vector3f32){0.0f, 0.0f, 1.0f}, rot);
+	trans = mat4f32_scale(trans, (vector3f32){w, h, 1.0f});
+	mat4x4f32 final = mat4f32_mul(r->data.projection, trans);
+
+	glUniformMatrix4fv(transformm_loc, 1, false, final.m);
 	glBindVertexArray(r->quad_pipeline.vertex_array);
 	glDrawElements(GL_TRIANGLES, r->quad_pipeline.vertex_count, GL_UNSIGNED_INT, 0);
 }

@@ -11,5 +11,6 @@ target_compile_options(
 	dev
 	PRIVATE
 	$<$<CONFIG:Debug>:-Wall -Wextra -g -O0>
+	$<$<CONFIG:RelWithDebugInfo>:-Wall;-Wextra;-g;-O0>
 )
 target_link_libraries(dev PRIVATE Gryphon Glad)

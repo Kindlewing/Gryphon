@@ -6,6 +6,7 @@
 #include "gryphon.h"
 #include <X11/X.h>
 #include <X11/Xlib.h>
+#include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -20,6 +21,7 @@ struct gryphon_window {
 	u32 width;
 	u32 height;
 	b8 should_close;
+	Atom wm_delete;
 };
 
 static void x11_err(string8 err) {
@@ -144,6 +146,31 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	win->x_window = x_window;
 	win->scren_num = screen;
 	win->should_close = false;
+
+	// -------------------------------
+	// WM_NORMAL_HINTS (fixed size)
+	// -------------------------------
+	XSizeHints size_hints = {0};
+	size_hints.flags = PSize | PMinSize | PMaxSize;
+	size_hints.min_width = w;
+	size_hints.min_height = h;
+	size_hints.max_width = w;
+	size_hints.max_height = h;
+	XSetWMNormalHints(dpy, x_window, &size_hints);
+
+	XClassHint class_hint = {0};
+	class_hint.res_name = "gryphon";
+	class_hint.res_class = "gryphon";
+	XSetClassHint(dpy, x_window, &class_hint);
+
+	Atom wm_type = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE", False);
+	Atom wm_type_normal = XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_NORMAL", False);
+	XChangeProperty(dpy, x_window, wm_type, XA_ATOM, 32, PropModeReplace,
+					(unsigned char *)&wm_type_normal, 1);
+
+	win->wm_delete = XInternAtom(dpy, "WM_DELETE_WINDOW", False);
+	XSetWMProtocols(dpy, x_window, &win->wm_delete, 1);
+
 	XMapWindow(win->dpy, win->x_window);
 	XStoreName(win->dpy, win->x_window, (char *)title.data);
 	return win;
@@ -155,6 +182,11 @@ void platform_poll_events(gryphon_window *win) {
 	while(XPending(win->dpy)) {
 		XNextEvent(win->dpy, &event);
 		switch(event.type) {
+		case ClientMessage:
+			if((Atom)event.xclient.data.l[0] == win->wm_delete) {
+				win->should_close = true;
+			}
+			break;
 		case KeyPress:
 			if(XLookupKeysym(&event.xkey, 0) == XK_Escape) {
 				win->should_close = true;
