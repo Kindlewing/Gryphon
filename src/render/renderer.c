@@ -99,12 +99,13 @@ void render_begin(renderer *r) {
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void render_triangle(renderer *r, vector2f32 pos, f32 w, f32 h) {
+void render_triangle(renderer *r, vector2f32 pos, f32 w, f32 h, f32 rot) {
 	u32 shader_id = r->triangle_pipeline.shader_program;
 	glUseProgram(shader_id);
 	u32 transformm_loc = glGetUniformLocation(shader_id, "transform");
 
 	mat4x4f32 trans = mat4f32_identity();
+	trans = mat4f32_rotate(trans, (vector3f32){0.0f, 0.0f, 1.0f}, rot);
 	trans = mat4f32_scale(trans, (vector3f32){w, h, 1.0});
 
 	glUniformMatrix4fv(transformm_loc, 1, false, trans.m);

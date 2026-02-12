@@ -40,7 +40,7 @@ int main(void) {
 
 		render_clear((vector4f32){33.0, 33.0, 33.0, 1.0});
 
-		render_triangle(&renderer, (vector2f32){2.0f, 4.0f}, x, y);
+		render_triangle(&renderer, (vector2f32){2.0f, 4.0f}, x, y, z);
 
 		render_end(&renderer);
 		if(x > 2.0f) {
