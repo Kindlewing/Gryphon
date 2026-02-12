@@ -25,22 +25,22 @@ int main(void) {
 	arena *frame_arena = arena_create(KiB(8));
 	f32 x = 0.0f;
 	f32 y = 0.0f;
-	f32 z = 0.0;
+	f32 rotation = 0.0;
 	while(!gryphon_window_should_close(window)) {
 		begin_time_block("main loop");
 
 		arena_clear(frame_arena);
 		gryphon_poll_events(window);
 
-		x += 0.001;
-		y += 0.001;
-		z += 0.001;
+		x += 0.01;
+		y += 0.01;
+		rotation += 0.01;
 
 		render_begin(&renderer);
 
 		render_clear((vector4f32){33.0, 33.0, 33.0, 1.0});
 
-		render_triangle(&renderer, (vector2f32){2.0f, 4.0f}, x, y, z);
+		render_triangle(&renderer, (vector2f32){2.0f, 4.0f}, x, y, rotation / 2.0f);
 
 		render_end(&renderer);
 		if(x > 2.0f) {
