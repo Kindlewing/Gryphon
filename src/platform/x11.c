@@ -17,6 +17,7 @@ struct gryphon_window {
 	GLXFBConfig fb_cfg;
 	GLXContext opengl_ctx;
 	XVisualInfo *vi;
+	Colormap colormap;
 	i32 scren_num;
 	u32 width;
 	u32 height;
@@ -117,7 +118,8 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	i32 x = 0;
 	i32 y = 0;
 	i32 border_width = 0;
-	attr.colormap = XCreateColormap(dpy, root, vi->visual, AllocNone);
+	Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
+	attr.colormap = cmap;
 	attr.event_mask = ExposureMask | KeyPressMask;
 	Window x_window =
 			XCreateWindow(dpy, root, x, y, w, h, border_width, vi->depth, InputOutput,
@@ -147,6 +149,7 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	glViewport(0, 0, fb_width, fb_height);
 
 	win->vi = vi;
+	win->colormap = cmap;
 	win->fb_cfg = cfg;
 	win->x_window = x_window;
 	win->scren_num = screen;
@@ -177,7 +180,9 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	XSetWMProtocols(dpy, x_window, &win->wm_delete, 1);
 
 	XMapWindow(win->dpy, win->x_window);
-	XStoreName(win->dpy, win->x_window, (char *)title.data);
+	scratch_arena scr = scratch_begin(a);
+	XStoreName(win->dpy, win->x_window, string8_to_cstr(scr.parent, title));
+	scratch_end(&scr);
 	XFree(configs);
 	return win;
 }
@@ -217,7 +222,10 @@ void platform_swap_buffers(gryphon_window *win) {
 }
 
 void platform_close_window(gryphon_window *win) {
+	glXMakeCurrent(win->dpy, None, NULL);
 	glXDestroyContext(win->dpy, win->opengl_ctx);
+	XFree(win->vi);
+	XFreeColormap(win->dpy, win->colormap);
 	XUnmapWindow(win->dpy, win->x_window);
 	XDestroyWindow(win->dpy, win->x_window);
 	XCloseDisplay(win->dpy);

@@ -15,8 +15,8 @@ static inline void gl_shader_source_string8(GLuint shader, string8 src) {
 
 b8 shader_init(arena *a, shader *s, string8 vertex_path, string8 fragment_path) {
 	scratch_arena scr = scratch_begin(a);
-	i32 vertex_fd = open((char *)vertex_path.data, O_RDONLY);
-	i32 fragment_fd = open((char *)fragment_path.data, O_RDONLY);
+	i32 vertex_fd = open(string8_to_cstr(scr.parent, vertex_path), O_RDONLY);
+	i32 fragment_fd = open(string8_to_cstr(scr.parent, fragment_path), O_RDONLY);
 
 	if(vertex_fd < 0 || fragment_fd < 0) {
 		perror("Failed to open shader file");
