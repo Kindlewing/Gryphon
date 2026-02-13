@@ -57,6 +57,8 @@ b8 shader_init(arena *a, shader *s, string8 vertex_path, string8 fragment_path) 
 		char log[512];
 		glGetShaderInfoLog(s->vertex_id, 512, NULL, log);
 		printf("Vertex shader compile error:\n%s\n", log);
+		close(vertex_fd);
+		close(fragment_fd);
 		scratch_end(&scr);
 		return false;
 	}
@@ -66,6 +68,8 @@ b8 shader_init(arena *a, shader *s, string8 vertex_path, string8 fragment_path) 
 		char log[512];
 		glGetShaderInfoLog(s->fragment_id, 512, NULL, log);
 		printf("Fragment shader compile error:\n%s\n", log);
+		close(vertex_fd);
+		close(fragment_fd);
 		scratch_end(&scr);
 		return false;
 	}
@@ -79,6 +83,8 @@ b8 shader_init(arena *a, shader *s, string8 vertex_path, string8 fragment_path) 
 		char log[512];
 		glGetProgramInfoLog(s->id, 512, NULL, log);
 		printf("Shader program link error:\n%s\n", log);
+		close(vertex_fd);
+		close(fragment_fd);
 		scratch_end(&scr);
 		return false;
 	}

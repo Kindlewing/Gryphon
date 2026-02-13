@@ -95,8 +95,6 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 			8,
 			GLX_DEPTH_SIZE,
 			24,
-			GLX_STENCIL_SIZE,
-			8,
 			None,
 	};
 
@@ -109,6 +107,7 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 
 	if(cfg == NULL) {
 		x11_err(string8_lit("No suitible framebuffer config found.\n"));
+		XFree(configs);
 		return NULL;
 	}
 
@@ -124,6 +123,12 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 			XCreateWindow(dpy, root, x, y, w, h, border_width, vi->depth, InputOutput,
 						  vi->visual, CWEventMask | CWColormap, &attr);
 	GLXContext ctx = x11_create_core_ctx(dpy, cfg);
+	if(!ctx) {
+		XFree(configs);
+		XDestroyWindow(dpy, x_window);
+		XCloseDisplay(dpy);
+		return NULL;
+	}
 	glXMakeCurrent(dpy, x_window, ctx);
 
 	// Initialize glad
@@ -173,6 +178,7 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 
 	XMapWindow(win->dpy, win->x_window);
 	XStoreName(win->dpy, win->x_window, (char *)title.data);
+	XFree(configs);
 	return win;
 }
 
@@ -211,6 +217,8 @@ void platform_swap_buffers(gryphon_window *win) {
 }
 
 void platform_close_window(gryphon_window *win) {
+	glXDestroyContext(win->dpy, win->opengl_ctx);
 	XUnmapWindow(win->dpy, win->x_window);
 	XDestroyWindow(win->dpy, win->x_window);
+	XCloseDisplay(win->dpy);
 }

@@ -119,7 +119,7 @@ void render_triangle(renderer *r, vector3f32 pos, f32 w, f32 h, f32 rot) {
 }
 
 void render_quad(renderer *r, vector3f32 pos, f32 w, f32 h, f32 rot) {
-	u32 shader_id = r->triangle_pipeline.shader_program;
+	u32 shader_id = r->quad_pipeline.shader_program;
 	glUseProgram(r->quad_pipeline.shader_program);
 
 	u32 transformm_loc = glGetUniformLocation(shader_id, "transform");

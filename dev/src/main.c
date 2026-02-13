@@ -4,17 +4,25 @@
 #include "gryphon.h"
 #include "render/renderer.h"
 #include "string8.h"
-#include <stdio.h>
 #include <time.h>
 #include <unistd.h>
 
 #define W 800
 #define H 600
+#define BOID_COUNT 60
 
 typedef struct boid {
 	vector2f32 pos;
 	vector2f32 vel;
+	f32 size_x;
+	f32 size_y;
+	f64 rotation;
 } boid;
+
+void draw_boid(renderer *r, boid *boid) {
+	render_triangle(r, (vector3f32){boid->pos.x, boid->pos.y, 1.0}, boid->size_x,
+					boid->size_y, boid->rotation);
+}
 
 int main(void) {
 	begin_profile();
@@ -31,14 +39,18 @@ int main(void) {
 
 	renderer renderer = renderer_create(engine_arena, window);
 
-	arena *boids_arena = arena_create(sizeof(boid) * 32);
+	arena *boids_arena = arena_create(sizeof(boid) * BOID_COUNT);
 	arena *frame_arena = arena_create(KiB(8));
 
-	boid *boids = arena_push_array(boids_arena, boid, 32);
+	boid *boids = arena_push_array(boids_arena, boid, BOID_COUNT);
 
-	for(i32 i = 0; i < 32; i += 1) {
+	for(i32 i = 0; i < BOID_COUNT; i += 1) {
 		boid *b = &boids[i];
-		b->pos = vector2f32_add(b->pos, b->vel);
+		b->pos = vector2f32_make(W / 2.0f, H / 2.0f);
+		b->vel = vector2f32_make(0.0f, 0.0f);
+		b->size_x = 10.0f;
+		b->size_y = 20.0f;
+		b->rotation = 0.0f;
 	}
 
 	while(!gryphon_window_should_close(window)) {
@@ -47,19 +59,11 @@ int main(void) {
 		arena_clear(frame_arena);
 		gryphon_poll_events(window);
 
-		for(i32 i = 0; i < 32; i += 1) {
-			boids[i].pos.x += 3;
-			boids[i].pos.y -= 0.5f;
-		}
-
 		render_begin(&renderer);
 		render_clear((vector4f32){33.0, 33.0, 33.0, 1.0});
-
-		for(i32 i = 0; i < 32; i += 1) {
-			render_triangle(&renderer, (vector3f32){boids[i].pos.x, boids[i].pos.y, 1.0},
-							-20.0f, -40.0f, 0.0f);
+		for(i32 i = 0; i < BOID_COUNT; i += 1) {
+			draw_boid(&renderer, &boids[i]);
 		}
-
 		render_end(&renderer);
 		end_time_block;
 	}
