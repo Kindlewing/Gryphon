@@ -4,7 +4,7 @@
 #include "gryphon.h"
 #include "render/renderer.h"
 #include "string8.h"
-#include <stdio.h>
+#include <time.h>
 #include <unistd.h>
 
 #define W 800

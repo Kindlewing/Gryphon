@@ -5,6 +5,20 @@
 
 #include "platform/platform.h"
 
+struct gryphon_state {
+	f64 starting_time;
+	b8 init_success;
+};
+
+static struct gryphon_state global_state;
+
+void gryphon_init(void) {
+}
+
+f64 gryphon_get_time(void) {
+	return time_now() - global_state.starting_time;
+}
+
 gryphon_window *gryphon_create_window(arena *a, u32 width, u32 height, string8 title) {
 	return platform_create_window(a, width, height, title);
 }
