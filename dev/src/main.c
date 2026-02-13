@@ -4,6 +4,7 @@
 #include "gryphon.h"
 #include "render/renderer.h"
 #include "string8.h"
+#include <stdio.h>
 #include <time.h>
 #include <unistd.h>
 
@@ -12,10 +13,13 @@
 
 typedef struct boid {
 	vector2f32 pos;
+	vector2f32 vel;
 } boid;
 
 int main(void) {
 	begin_profile();
+
+	gryphon_init();
 	arena *engine_arena = arena_create(KiB(64));
 	string8 title = string8_lit("Spark Engine");
 	gryphon_window *window = gryphon_create_window(engine_arena, W, H, title);
@@ -33,7 +37,8 @@ int main(void) {
 	boid *boids = arena_push_array(boids_arena, boid, 32);
 
 	for(i32 i = 0; i < 32; i += 1) {
-		boids[i] = (boid){.pos = (vector2f32){i + 25, i + 20}};
+		boid *b = &boids[i];
+		b->pos = vector2f32_add(b->pos, b->vel);
 	}
 
 	while(!gryphon_window_should_close(window)) {

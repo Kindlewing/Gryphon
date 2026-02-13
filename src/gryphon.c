@@ -1,6 +1,7 @@
 #include "gryphon.h"
 #include "string8.h"
 #include "typedefs.h"
+#include "base_time.h"
 #include "glad.h"
 
 #include "platform/platform.h"
@@ -13,6 +14,8 @@ struct gryphon_state {
 static struct gryphon_state global_state;
 
 void gryphon_init(void) {
+	global_state.starting_time = time_now();
+	global_state.init_success = true;
 }
 
 f64 gryphon_get_time(void) {
