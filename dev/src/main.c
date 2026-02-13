@@ -37,7 +37,7 @@ int main(void) {
 		return -1;
 	}
 
-	renderer renderer = renderer_create(engine_arena, window);
+	renderer *renderer = renderer_create(engine_arena, window);
 
 	arena *boids_arena = arena_create(sizeof(boid) * BOID_COUNT);
 	arena *frame_arena = arena_create(KiB(8));
@@ -59,12 +59,12 @@ int main(void) {
 		arena_clear(frame_arena);
 		gryphon_poll_events(window);
 
-		render_begin(&renderer);
+		render_begin(renderer);
 		render_clear((vector4f32){33.0, 33.0, 33.0, 1.0});
 		for(i32 i = 0; i < BOID_COUNT; i += 1) {
-			draw_boid(&renderer, &boids[i]);
+			draw_boid(renderer, &boids[i]);
 		}
-		render_end(&renderer);
+		render_end(renderer);
 		end_time_block;
 	}
 

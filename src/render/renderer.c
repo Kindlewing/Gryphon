@@ -6,7 +6,37 @@
 #include "stdio.h"
 #include <glad.h>
 
-static render_pipeline pipeline_create(arena *a, vertex *vertices, u32 vertex_count,
+typedef struct render_pipeline {
+	u32 vertex_buffer;
+	u32 vertex_array;
+	u32 idx_buffer;
+	u32 vertex_count;
+	u32 shader_program;
+} render_pipeline;
+
+typedef struct render_data {
+	string8 vertex_path;
+	string8 fragment_path;
+
+	mat4x4f32 projection;
+	// other user-passed data at some point
+} render_data;
+
+struct renderer {
+	render_pipeline triangle_pipeline;
+	render_pipeline quad_pipeline;
+	render_data data;
+
+	vector4f32 clear_color;
+
+	u32 framebuffer;
+	u32 framebuffer_width;
+	u32 framebuffer_height;
+
+	gryphon_window *win;
+};
+
+static render_pipeline pipeline_create(arena *a, vector3f32 *vertices, u32 vertex_count,
 									   u32 *indices, u32 index_count, string8 vertex_path,
 									   string8 fragment_path) {
 	render_pipeline p = {0};
@@ -43,19 +73,19 @@ static render_pipeline pipeline_create(arena *a, vertex *vertices, u32 vertex_co
 	return p;
 }
 
-renderer renderer_create(arena *a, gryphon_window *win) {
-	renderer r = {0};
-	r.win = win;
-	u32 width = gryphon_window_width(r.win);
-	u32 height = gryphon_window_height(r.win);
+renderer *renderer_create(arena *a, gryphon_window *win) {
+	renderer *r = arena_push_struct(a, renderer);
+	r->win = win;
+	u32 width = gryphon_window_width(r->win);
+	u32 height = gryphon_window_height(r->win);
 	mat4x4f32 projection = mat4f32_ortho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
 	render_data data = {.vertex_path = string8_lit("shaders/vertex.glsl"),
 						.fragment_path = string8_lit("shaders/fragment.glsl"),
 						.projection = projection};
 
-	r.data = data;
+	r->data = data;
 	// clang-format off
-	vertex triangle_vertices[] = {
+	vector3f32 triangle_vertices[] = {
 		{-0.5f, -0.5f, 0.0f},  // bottom left;
 		{ 0.0f,  0.5f, 0.0f}, // top middle,
 		{ 0.5f, -0.5f, 0.0f} // bottom right
@@ -66,14 +96,14 @@ renderer renderer_create(arena *a, gryphon_window *win) {
 	};
 	// clang-format on
 
-	r.triangle_pipeline = pipeline_create(a, triangle_vertices, 9, triangle_indices, 3,
-										  r.data.vertex_path, r.data.fragment_path);
+	r->triangle_pipeline = pipeline_create(a, triangle_vertices, 9, triangle_indices, 3,
+										   r->data.vertex_path, r->data.fragment_path);
 	// clang-format off
-	vertex quad_vertices[] = {
+	vector3f32 quad_vertices[] = {
 		{ 0.5f,  0.5f, 0.0f },  // top right
 		{ 0.5f, -0.5f, 0.0f },  // bottom right
 		{-0.5f, -0.5f, 0.0f },  // bottom left
-		{-0.5f,  0.5f, 0.0f }   // top left 		   
+		{-0.5f,  0.5f, 0.0f }   // top left
 	};
 
 	u32 quad_indices[] = {
@@ -82,10 +112,10 @@ renderer renderer_create(arena *a, gryphon_window *win) {
 	};
 
 	// clang-format on
-	r.quad_pipeline = pipeline_create(a, quad_vertices, 12, quad_indices, 6,
-									  r.data.vertex_path, r.data.fragment_path);
+	r->quad_pipeline = pipeline_create(a, quad_vertices, 12, quad_indices, 6,
+									   r->data.vertex_path, r->data.fragment_path);
 	// set the default framebuffer
-	render_set_framebuffer(&r, 0, width, height);
+	render_set_framebuffer(r, 0, width, height);
 	return r;
 }
 
