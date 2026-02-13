@@ -15,6 +15,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 option(DEV "Build the dev project" OFF)
+option(PROFILE_ENABLE "Enable profiling" OFF)
 
 find_package(OpenGL REQUIRED)
 
@@ -44,6 +45,8 @@ target_compile_options(Gryphon PRIVATE
 				$<$<CONFIG:Debug>:-Wall;-Wextra;-g;-O0>
 				$<$<CONFIG:RelWithDebugInfo>:-Wall;-Wextra;-g;-O0>
 )
+
+target_link_options(Gryphon PUBLIC $<$<CONFIG:Release>:-s>)
 
 # Add our base layer
 add_subdirectory(lib/base)
