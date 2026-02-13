@@ -4,7 +4,31 @@
 #include "linalg.h"
 #include "platform/platform.h"
 #include "stdio.h"
+#include "typedefs.h"
 #include <glad.h>
+
+#define MAX_COMMANDS 60
+
+typedef enum {
+	RENDER_PIPELINE_TRIANGLE,
+	RENDER_PIPELINE_QUAD,
+	// Add more here
+	RENDER_PIPELINE_COUNT,
+} render_command_type;
+
+typedef struct {
+	render_command_type type;
+	vector3f32 pos;
+	f32 w;
+	f32 h;
+	f32 rot;
+} render_command;
+
+typedef struct {
+	render_command *cmds;
+	u32 count;
+	u32 capacity;
+} render_command_buffer;
 
 typedef struct render_pipeline {
 	u32 vertex_buffer;
@@ -17,14 +41,13 @@ typedef struct render_pipeline {
 typedef struct render_data {
 	string8 vertex_path;
 	string8 fragment_path;
-
 	mat4x4f32 projection;
 	// other user-passed data at some point
 } render_data;
 
 struct renderer {
-	render_pipeline triangle_pipeline;
-	render_pipeline quad_pipeline;
+	render_command_buffer *commands;
+	render_pipeline pipelines[RENDER_PIPELINE_COUNT];
 	render_data data;
 
 	vector4f32 clear_color;
@@ -96,8 +119,9 @@ renderer *renderer_create(arena *a, gryphon_window *win) {
 	};
 	// clang-format on
 
-	r->triangle_pipeline = pipeline_create(a, triangle_vertices, 9, triangle_indices, 3,
-										   r->data.vertex_path, r->data.fragment_path);
+	r->pipelines[RENDER_PIPELINE_TRIANGLE] =
+			pipeline_create(a, triangle_vertices, 9, triangle_indices, 3,
+							r->data.vertex_path, r->data.fragment_path);
 	// clang-format off
 	vector3f32 quad_vertices[] = {
 		{ 0.5f,  0.5f, 0.0f },  // top right
@@ -112,8 +136,9 @@ renderer *renderer_create(arena *a, gryphon_window *win) {
 	};
 
 	// clang-format on
-	r->quad_pipeline = pipeline_create(a, quad_vertices, 12, quad_indices, 6,
-									   r->data.vertex_path, r->data.fragment_path);
+	r->pipelines[RENDER_PIPELINE_QUAD] =
+			pipeline_create(a, quad_vertices, 12, quad_indices, 6, r->data.vertex_path,
+							r->data.fragment_path);
 	// set the default framebuffer
 	render_set_framebuffer(r, 0, width, height);
 	return r;
@@ -125,43 +150,39 @@ void render_set_framebuffer(renderer *r, u32 framebuffer, u32 w, u32 h) {
 	r->framebuffer_height = h;
 }
 
-void render_begin(renderer *r) {
+void render_begin(arena *frame_arena, renderer *r) {
+	r->commands = arena_push_struct(frame_arena, render_command_buffer);
+	r->commands->cmds = arena_push_array(frame_arena, render_command, MAX_COMMANDS);
+	r->commands->count = 0;
+	r->commands->capacity = MAX_COMMANDS;
+
 	glBindFramebuffer(GL_FRAMEBUFFER, r->framebuffer);
 	glViewport(0, 0, r->framebuffer_width, r->framebuffer_height);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
-void render_triangle(renderer *r, vector3f32 pos, f32 w, f32 h, f32 rot) {
-	u32 shader_id = r->triangle_pipeline.shader_program;
-	glUseProgram(shader_id);
-	u32 transformm_loc = glGetUniformLocation(shader_id, "transform");
-
-	mat4x4f32 trans = mat4f32_identity();
-	trans = mat4f32_translate(trans, pos);
-	trans = mat4f32_rotate(trans, (vector3f32){0.0f, 0.0f, 1.0f}, rot);
-	trans = mat4f32_scale(trans, (vector3f32){w, h, 1.0f});
-	mat4x4f32 final = mat4f32_mul(r->data.projection, trans);
-
-	glUniformMatrix4fv(transformm_loc, 1, false, final.m);
-	glBindVertexArray(r->triangle_pipeline.vertex_array);
-	glDrawElements(GL_TRIANGLES, r->triangle_pipeline.vertex_count, GL_UNSIGNED_INT, 0);
+static void render_push_cmd(renderer *r, render_command_type type, vector3f32 pos, f32 w,
+							f32 h, f32 rot) {
+	if(r->commands->count >= r->commands->capacity) {
+		printf("Render command capacity reached: total count: %d, max cap: %d\n",
+			   r->commands->count, r->commands->capacity);
+		exit(-1);
+	}
+	render_command *cmd = &r->commands->cmds[r->commands->count++];
+	cmd->type = type;
+	cmd->pos = pos;
+	cmd->w = w;
+	cmd->h = h;
+	cmd->rot = rot;
 }
 
-void render_quad(renderer *r, vector3f32 pos, f32 w, f32 h, f32 rot) {
-	u32 shader_id = r->quad_pipeline.shader_program;
-	glUseProgram(r->quad_pipeline.shader_program);
+void render_push_triangle(renderer *r, vector3f32 pos, f32 w, f32 h, f32 rot) {
+	render_push_cmd(r, RENDER_PIPELINE_TRIANGLE, pos, w, h, rot);
+}
 
-	u32 transformm_loc = glGetUniformLocation(shader_id, "transform");
-	mat4x4f32 trans = mat4f32_identity();
-	trans = mat4f32_translate(trans, pos);
-	trans = mat4f32_rotate(trans, (vector3f32){0.0f, 0.0f, 1.0f}, rot);
-	trans = mat4f32_scale(trans, (vector3f32){w, h, 1.0f});
-	mat4x4f32 final = mat4f32_mul(r->data.projection, trans);
-
-	glUniformMatrix4fv(transformm_loc, 1, false, final.m);
-	glBindVertexArray(r->quad_pipeline.vertex_array);
-	glDrawElements(GL_TRIANGLES, r->quad_pipeline.vertex_count, GL_UNSIGNED_INT, 0);
+void render_push_quad(renderer *r, vector3f32 pos, f32 w, f32 h, f32 rot) {
+	render_push_cmd(r, RENDER_PIPELINE_QUAD, pos, w, h, rot);
 }
 
 void render_clear(vector4f32 color) {
@@ -170,5 +191,29 @@ void render_clear(vector4f32 color) {
 }
 
 void render_end(renderer *r) {
+	u32 count = r->commands->count;
+
+	for(usize i = 0; i < count; i += 1) {
+		render_command *cmd = &r->commands->cmds[i];
+		render_pipeline *p = &r->pipelines[cmd->type];
+		u32 shader_id = p->shader_program;
+
+		glUseProgram(shader_id);
+
+		u32 transform_loc = glGetUniformLocation(shader_id, "transform");
+		u32 proj_loc = glGetUniformLocation(shader_id, "projection");
+
+		mat4x4f32 trans = mat4f32_identity();
+		trans = mat4f32_translate(trans, cmd->pos);
+		trans = mat4f32_rotate(trans, (vector3f32){0.0f, 0.0f, 1.0f}, cmd->rot);
+		trans = mat4f32_scale(trans, (vector3f32){cmd->w, cmd->h, 1.0f});
+
+		glUniformMatrix4fv(transform_loc, 1, GL_FALSE, trans.m);
+		glUniformMatrix4fv(proj_loc, 1, GL_FALSE, r->data.projection.m);
+
+		glBindVertexArray(p->vertex_array);
+		glDrawElements(GL_TRIANGLES, p->vertex_count, GL_UNSIGNED_INT, 0);
+	}
+
 	platform_swap_buffers(r->win);
 }
