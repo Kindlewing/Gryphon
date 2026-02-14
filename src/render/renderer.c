@@ -7,7 +7,7 @@
 #include "typedefs.h"
 #include <glad.h>
 
-#define MAX_COMMANDS 60
+#define COMMAND_BUFFER_CAPACITY (MiB(16) / sizeof(render_command))
 
 typedef enum {
 	RENDER_PIPELINE_TRIANGLE,
@@ -23,12 +23,6 @@ typedef struct {
 	f32 h;
 	f32 rot;
 } render_command;
-
-typedef struct {
-	render_command *cmds;
-	u32 count;
-	u32 capacity;
-} render_command_buffer;
 
 typedef struct render_pipeline {
 	u32 vertex_buffer;
@@ -46,7 +40,9 @@ typedef struct render_data {
 } render_data;
 
 struct renderer {
-	render_command_buffer *commands;
+	render_command *commands;
+	u32 command_count;
+	u32 command_capacity;
 	render_pipeline pipelines[RENDER_PIPELINE_COUNT];
 	render_data data;
 
@@ -141,6 +137,11 @@ renderer *renderer_create(arena *a, gryphon_window *win) {
 							r->data.fragment_path);
 	// set the default framebuffer
 	render_set_framebuffer(r, 0, width, height);
+
+	r->commands = arena_push_array(a, render_command, COMMAND_BUFFER_CAPACITY);
+	r->command_count = 0;
+	r->command_capacity = COMMAND_BUFFER_CAPACITY;
+
 	return r;
 }
 
@@ -150,12 +151,8 @@ void render_set_framebuffer(renderer *r, u32 framebuffer, u32 w, u32 h) {
 	r->framebuffer_height = h;
 }
 
-void render_begin(arena *frame_arena, renderer *r) {
-	r->commands = arena_push_struct(frame_arena, render_command_buffer);
-	r->commands->cmds = arena_push_array(frame_arena, render_command, MAX_COMMANDS);
-	r->commands->count = 0;
-	r->commands->capacity = MAX_COMMANDS;
-
+void render_begin(renderer *r) {
+	r->command_count = 0;
 	glBindFramebuffer(GL_FRAMEBUFFER, r->framebuffer);
 	glViewport(0, 0, r->framebuffer_width, r->framebuffer_height);
 	glEnable(GL_BLEND);
@@ -164,12 +161,12 @@ void render_begin(arena *frame_arena, renderer *r) {
 
 static void render_push_cmd(renderer *r, render_command_type type, vector3f32 pos, f32 w,
 							f32 h, f32 rot) {
-	if(r->commands->count >= r->commands->capacity) {
+	if(r->command_count >= r->command_capacity) {
 		printf("Render command capacity reached: total count: %d, max cap: %d\n",
-			   r->commands->count, r->commands->capacity);
+			   r->command_count, r->command_capacity);
 		exit(-1);
 	}
-	render_command *cmd = &r->commands->cmds[r->commands->count++];
+	render_command *cmd = &r->commands[r->command_count++];
 	cmd->type = type;
 	cmd->pos = pos;
 	cmd->w = w;
@@ -191,10 +188,10 @@ void render_clear(vector4f32 color) {
 }
 
 void render_end(renderer *r) {
-	u32 count = r->commands->count;
+	u32 count = r->command_count;
 
 	for(usize i = 0; i < count; i += 1) {
-		render_command *cmd = &r->commands->cmds[i];
+		render_command *cmd = &r->commands[i];
 		render_pipeline *p = &r->pipelines[cmd->type];
 		u32 shader_id = p->shader_program;
 
