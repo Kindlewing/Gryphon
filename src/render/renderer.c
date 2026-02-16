@@ -197,7 +197,6 @@ void render_end(renderer *r) {
 		render_command *cmd = &r->commands[i];
 		render_pipeline *p = &r->pipelines[cmd->type];
 		u32 shader_id = p->shader_program;
-
 		glUseProgram(shader_id);
 
 		u32 transform_loc = glGetUniformLocation(shader_id, "transform");
