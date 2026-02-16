@@ -6,8 +6,8 @@
 #include "stdio.h"
 #include "typedefs.h"
 #include <glad.h>
-
-#define COMMAND_BUFFER_CAPACITY (MiB(16) / sizeof(render_command))
+#define COMMAND_BUFFER_BYTES MiB(16)
+#define COMMAND_BUFFER_CAPACITY (COMMAND_BUFFER_BYTES / sizeof(render_command))
 
 typedef enum {
 	RENDER_PIPELINE_TRIANGLE,
@@ -17,8 +17,8 @@ typedef enum {
 } render_command_type;
 
 typedef struct {
-	render_command_type type;
 	vector3f32 pos;
+	render_command_type type;
 	f32 w;
 	f32 h;
 	f32 rot;
@@ -40,6 +40,7 @@ typedef struct render_data {
 } render_data;
 
 struct renderer {
+	arena *render_arena;
 	render_command *commands;
 	u32 command_count;
 	u32 command_capacity;
@@ -137,10 +138,11 @@ renderer *renderer_create(arena *a, gryphon_window *win) {
 							r->data.fragment_path);
 	// set the default framebuffer
 	render_set_framebuffer(r, 0, width, height);
-
-	r->commands = arena_push_array(a, render_command, COMMAND_BUFFER_CAPACITY);
+	r->render_arena = arena_create(COMMAND_BUFFER_BYTES);
+	r->commands =
+			arena_push_array(r->render_arena, render_command, COMMAND_BUFFER_CAPACITY);
 	r->command_count = 0;
-	r->command_capacity = COMMAND_BUFFER_CAPACITY;
+	r->command_capacity = COMMAND_BUFFER_BYTES;
 
 	return r;
 }
@@ -166,7 +168,8 @@ static void render_push_cmd(renderer *r, render_command_type type, vector3f32 po
 			   r->command_count, r->command_capacity);
 		exit(-1);
 	}
-	render_command *cmd = &r->commands[r->command_count++];
+	render_command *cmd = &r->commands[r->command_count];
+	r->command_count += 1;
 	cmd->type = type;
 	cmd->pos = pos;
 	cmd->w = w;
