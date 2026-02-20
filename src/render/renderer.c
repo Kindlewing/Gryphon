@@ -10,18 +10,24 @@
 #define COMMAND_BUFFER_CAPACITY (COMMAND_BUFFER_BYTES / sizeof(render_command))
 
 typedef enum {
-	RENDER_PIPELINE_TRIANGLE,
-	RENDER_PIPELINE_QUAD,
+	RENDER_CLEAR_COLOR,
+	RENDER_TRIANGLE,
+	RENDER_QUAD,
 	// Add more here
-	RENDER_PIPELINE_COUNT,
+	COUNT,
 } render_command_type;
 
-typedef struct {
-	vector3f32 pos;
+typedef union {
 	render_command_type type;
-	f32 w;
-	f32 h;
-	f32 rot;
+	struct render_draw_command {
+		vector3f32 pos;
+		f32 w;
+		f32 h;
+		f32 rot;
+	} render_draw_command;
+	struct render_state_command {
+		vector4f32 color;
+	} render_state_command;
 } render_command;
 
 typedef struct render_pipeline {
@@ -44,7 +50,7 @@ struct renderer {
 	render_command *commands;
 	u32 command_count;
 	u32 command_capacity;
-	render_pipeline pipelines[RENDER_PIPELINE_COUNT];
+	render_pipeline pipelines[COUNT];
 	render_data data;
 
 	vector4f32 clear_color;
@@ -116,7 +122,7 @@ renderer *renderer_create(arena *a, gryphon_window *win) {
 	};
 	// clang-format on
 
-	r->pipelines[RENDER_PIPELINE_TRIANGLE] =
+	r->pipelines[RENDER_TRIANGLE] =
 			pipeline_create(a, triangle_vertices, 9, triangle_indices, 3,
 							r->data.vertex_path, r->data.fragment_path);
 	// clang-format off
@@ -133,7 +139,7 @@ renderer *renderer_create(arena *a, gryphon_window *win) {
 	};
 
 	// clang-format on
-	r->pipelines[RENDER_PIPELINE_QUAD] =
+	r->pipelines[RENDER_QUAD] =
 			pipeline_create(a, quad_vertices, 12, quad_indices, 6, r->data.vertex_path,
 							r->data.fragment_path);
 	// set the default framebuffer
@@ -145,6 +151,14 @@ renderer *renderer_create(arena *a, gryphon_window *win) {
 	r->command_capacity = COMMAND_BUFFER_BYTES;
 
 	return r;
+}
+
+void render_set_clear_color(renderer *r, vector4f32 color) {
+	r->clear_color = color;
+	r->clear_color.r /= 255.0;
+	r->clear_color.g /= 255.0;
+	r->clear_color.b /= 255.0;
+	r->clear_color.a /= 255.0;
 }
 
 void render_set_framebuffer(renderer *r, u32 framebuffer, u32 w, u32 h) {
@@ -178,11 +192,11 @@ static void render_push_cmd(renderer *r, render_command_type type, vector3f32 po
 }
 
 void render_push_triangle(renderer *r, vector3f32 pos, f32 w, f32 h, f32 rot) {
-	render_push_cmd(r, RENDER_PIPELINE_TRIANGLE, pos, w, h, rot);
+	render_push_cmd(r, RENDER_TRIANGLE, pos, w, h, rot);
 }
 
 void render_push_quad(renderer *r, vector3f32 pos, f32 w, f32 h, f32 rot) {
-	render_push_cmd(r, RENDER_PIPELINE_QUAD, pos, w, h, rot);
+	render_push_cmd(r, RENDER_QUAD, pos, w, h, rot);
 }
 
 void render_clear(vector4f32 color) {
@@ -203,7 +217,7 @@ void render_end(renderer *r) {
 		u32 proj_loc = glGetUniformLocation(shader_id, "projection");
 
 		mat4x4f32 trans = mat4f32_identity();
-		trans = mat4f32_translate(trans, cmd->pos);
+		trans = mat4f32_translate(trans, cmd->render_draw_command);
 		trans = mat4f32_rotate(trans, (vector3f32){0.0f, 0.0f, 1.0f}, cmd->rot);
 		trans = mat4f32_scale(trans, (vector3f32){cmd->w, cmd->h, 1.0f});
 
