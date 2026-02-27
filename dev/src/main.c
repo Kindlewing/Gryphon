@@ -58,7 +58,7 @@ int main(void) {
 		gryphon_poll_events(window);
 
 		render_begin(renderer);
-		render_set_clear_color(renderer, vector4f32_make(33.0f, 33.0f, 33.0f, 1.0f));
+		render_push_clear(renderer, vector4f32_make(33.0f, 33.0f, 33.0f, 1.0f));
 		for(i32 i = 0; i < BOID_COUNT; i += 1) {
 			draw_boid(renderer, &boids[i]);
 		}
