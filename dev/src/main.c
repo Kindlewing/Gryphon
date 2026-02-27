@@ -40,7 +40,6 @@ int main(void) {
 	renderer *renderer = renderer_create(engine_arena, window);
 
 	arena *boids_arena = arena_create(sizeof(boid) * BOID_COUNT);
-	arena *frame_arena = arena_create(MiB(1));
 
 	boid *boids = arena_push_array(boids_arena, boid, BOID_COUNT);
 
@@ -56,7 +55,6 @@ int main(void) {
 	while(!gryphon_window_should_close(window)) {
 		begin_time_block("main loop");
 
-		arena_clear(frame_arena);
 		gryphon_poll_events(window);
 
 		render_begin(renderer);
@@ -70,7 +68,6 @@ int main(void) {
 
 	gryphon_close_window(window);
 	arena_free(engine_arena);
-	arena_free(frame_arena);
 	end_profile(true);
 	return 0;
 }

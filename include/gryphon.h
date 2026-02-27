@@ -3,20 +3,16 @@
 #include "arena.h"
 #include "string8.h"
 #include "macros.h"
-
-typedef struct gryphon_window gryphon_window;
-
-gryphon_window *gryphon_create_window(arena *a, u32 width, u32 height, string8 title);
-
-f64 gryphon_get_time(void);
-u32 gryphon_window_width(gryphon_window *win);
-u32 gryphon_window_height(gryphon_window *win);
+#include "platform/platform.h"
 
 void gryphon_init(void);
+f64 gryphon_get_time(void);
 
-b8 gryphon_window_should_close(gryphon_window *win);
-void gryphon_swap_buffers(gryphon_window *win);
-void gryphon_poll_events(gryphon_window *win);
-void gryphon_close_window(gryphon_window *win);
+#define gryphon_create_window        platform_create_window
+#define gryphon_window_width         platform_window_width
+#define gryphon_window_height        platform_window_height
+#define gryphon_window_should_close  platform_window_should_close
+#define gryphon_poll_events          platform_poll_events
+#define gryphon_close_window         platform_close_window
 
 #endif // !GRYPHON_H

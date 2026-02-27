@@ -1,4 +1,4 @@
-#include "platform/x11.h"
+#include "platform/platform.h"
 #include "glad.h"
 #include "GL/glx.h"
 #include "arena.h"
@@ -18,7 +18,6 @@ struct gryphon_window {
 	GLXContext opengl_ctx;
 	XVisualInfo *vi;
 	Colormap colormap;
-	i32 scren_num;
 	u32 width;
 	u32 height;
 	b8 should_close;
@@ -144,15 +143,12 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	win->width = w;
 	win->height = h;
 
-	int fb_width = win->width;
-	int fb_height = win->height;
-	glViewport(0, 0, fb_width, fb_height);
+	glViewport(0, 0, win->width, win->height);
 
 	win->vi = vi;
 	win->colormap = cmap;
 	win->fb_cfg = cfg;
 	win->x_window = x_window;
-	win->scren_num = screen;
 	win->should_close = false;
 
 	// -------------------------------

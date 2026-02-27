@@ -41,21 +41,21 @@ b8 shader_init(arena *a, shader *s, string8 vertex_path, string8 fragment_path) 
 	string8 vertex_src = string8_read_file(scr.parent, vertex_fd, vertex_size);
 	string8 fragment_src = string8_read_file(scr.parent, fragment_fd, fragment_size);
 
-	s->vertex_id = glCreateShader(GL_VERTEX_SHADER);
-	s->fragment_id = glCreateShader(GL_FRAGMENT_SHADER);
+	u32 vert_id = glCreateShader(GL_VERTEX_SHADER);
+	u32 frag_id = glCreateShader(GL_FRAGMENT_SHADER);
 
-	gl_shader_source_string8(s->vertex_id, vertex_src);
-	gl_shader_source_string8(s->fragment_id, fragment_src);
+	gl_shader_source_string8(vert_id, vertex_src);
+	gl_shader_source_string8(frag_id, fragment_src);
 
-	glCompileShader(s->vertex_id);
-	glCompileShader(s->fragment_id);
+	glCompileShader(vert_id);
+	glCompileShader(frag_id);
 	s->id = glCreateProgram();
 
 	GLint ok;
-	glGetShaderiv(s->vertex_id, GL_COMPILE_STATUS, &ok);
+	glGetShaderiv(vert_id, GL_COMPILE_STATUS, &ok);
 	if(!ok) {
 		char log[512];
-		glGetShaderInfoLog(s->vertex_id, 512, NULL, log);
+		glGetShaderInfoLog(vert_id, 512, NULL, log);
 		printf("Vertex shader compile error:\n%s\n", log);
 		close(vertex_fd);
 		close(fragment_fd);
@@ -63,10 +63,10 @@ b8 shader_init(arena *a, shader *s, string8 vertex_path, string8 fragment_path) 
 		return false;
 	}
 
-	glGetShaderiv(s->fragment_id, GL_COMPILE_STATUS, &ok);
+	glGetShaderiv(frag_id, GL_COMPILE_STATUS, &ok);
 	if(!ok) {
 		char log[512];
-		glGetShaderInfoLog(s->fragment_id, 512, NULL, log);
+		glGetShaderInfoLog(frag_id, 512, NULL, log);
 		printf("Fragment shader compile error:\n%s\n", log);
 		close(vertex_fd);
 		close(fragment_fd);
@@ -74,8 +74,8 @@ b8 shader_init(arena *a, shader *s, string8 vertex_path, string8 fragment_path) 
 		return false;
 	}
 
-	glAttachShader(s->id, s->vertex_id);
-	glAttachShader(s->id, s->fragment_id);
+	glAttachShader(s->id, vert_id);
+	glAttachShader(s->id, frag_id);
 	glLinkProgram(s->id);
 	glGetProgramiv(s->id, GL_LINK_STATUS, &ok);
 
@@ -88,8 +88,8 @@ b8 shader_init(arena *a, shader *s, string8 vertex_path, string8 fragment_path) 
 		scratch_end(&scr);
 		return false;
 	}
-	glDeleteShader(s->vertex_id);
-	glDeleteShader(s->fragment_id);
+	glDeleteShader(vert_id);
+	glDeleteShader(frag_id);
 	close(vertex_fd);
 	close(fragment_fd);
 	scratch_end(&scr);

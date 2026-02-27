@@ -6,8 +6,6 @@
 
 typedef struct {
 	u32 id;
-	u32 vertex_id;
-	u32 fragment_id;
 } shader;
 
 b8 shader_init(arena *a, shader *s, string8 vertex_path, string8 fragment_path);
