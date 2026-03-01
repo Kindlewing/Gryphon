@@ -54,7 +54,6 @@ int main(void) {
 
 	while(!gryphon_window_should_close(window)) {
 		begin_time_block("main loop");
-
 		gryphon_poll_events(window);
 
 		render_begin(renderer);
@@ -65,7 +64,6 @@ int main(void) {
 		render_end(renderer);
 		end_time_block;
 	}
-
 	gryphon_close_window(window);
 	arena_free(engine_arena);
 	end_profile(true);

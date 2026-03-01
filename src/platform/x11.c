@@ -57,7 +57,7 @@ static GLXContext x11_create_core_ctx(Display *dpy, GLXFBConfig fb_cfg) {
 	return ctx;
 }
 
-gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
+gryphon_window *gryphon_create_window(arena *a, u32 w, u32 h, string8 title) {
 	Display *dpy = XOpenDisplay(NULL);
 	if(dpy == NULL) {
 		x11_err(string8_lit("X Display could not be created\n"));
@@ -183,7 +183,7 @@ gryphon_window *platform_create_window(arena *a, u32 w, u32 h, string8 title) {
 	return win;
 }
 
-void platform_poll_events(gryphon_window *win) {
+void gryphon_poll_events(gryphon_window *win) {
 	XEvent event;
 
 	while(XPending(win->dpy)) {
@@ -202,14 +202,14 @@ void platform_poll_events(gryphon_window *win) {
 	}
 }
 
-u32 platform_window_width(gryphon_window *win) {
+u32 gryphon_window_width(gryphon_window *win) {
 	return win->width;
 }
-u32 platform_window_height(gryphon_window *win) {
+u32 gryphon_window_height(gryphon_window *win) {
 	return win->height;
 }
 
-b8 platform_window_should_close(gryphon_window *win) {
+b8 gryphon_window_should_close(gryphon_window *win) {
 	return win->should_close;
 }
 
@@ -217,7 +217,7 @@ void platform_swap_buffers(gryphon_window *win) {
 	glXSwapBuffers(win->dpy, win->x_window);
 }
 
-void platform_close_window(gryphon_window *win) {
+void gryphon_close_window(gryphon_window *win) {
 	glXMakeCurrent(win->dpy, None, NULL);
 	glXDestroyContext(win->dpy, win->opengl_ctx);
 	XFree(win->vi);

@@ -1,5 +1,6 @@
 #include "render/renderer.h"
 #include "gryphon.h"
+#include "platform/platform.h"
 #include "render/shader.h"
 #include "linalg.h"
 #include <stdio.h>
@@ -62,8 +63,8 @@ static u32 upload_geometry(vector3f32 *verts, u32 vert_floats, u32 *indices,
 renderer *renderer_create(arena *a, gryphon_window *win) {
 	renderer *r = arena_push_struct(a, renderer);
 	r->win = win;
-	u32 width = platform_window_width(win);
-	u32 height = platform_window_height(win);
+	u32 width = gryphon_window_width(win);
+	u32 height = gryphon_window_height(win);
 	r->projection = mat4f32_ortho(0.0f, width, 0.0f, height, -1.0f, 1.0f);
 
 	shader s;
