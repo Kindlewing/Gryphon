@@ -38,9 +38,7 @@ int main(void) {
 	}
 
 	renderer *renderer = renderer_create(engine_arena, window);
-
 	arena *boids_arena = arena_create(sizeof(boid) * BOID_COUNT);
-
 	boid *boids = arena_push_array(boids_arena, boid, BOID_COUNT);
 
 	for(i32 i = 0; i < BOID_COUNT; i += 1) {

@@ -170,6 +170,5 @@ void render_end(renderer *r) {
 		}
 		}
 	}
-
 	platform_swap_buffers(r->win);
 }
