@@ -151,9 +151,6 @@ gryphon_window *gryphon_create_window(arena *a, u32 w, u32 h, string8 title) {
 	win->x_window = x_window;
 	win->should_close = false;
 
-	// -------------------------------
-	// WM_NORMAL_HINTS (fixed size)
-	// -------------------------------
 	XSizeHints size_hints = {0};
 	size_hints.flags = PSize | PMinSize | PMaxSize;
 	size_hints.min_width = w;
