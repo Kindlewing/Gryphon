@@ -2,7 +2,6 @@
 #include "profile.h"
 #include "linalg.h"
 #include "gryphon.h"
-#include "render/renderer.h"
 #include "string8.h"
 #include <time.h>
 #include <unistd.h>

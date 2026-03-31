@@ -1,4 +1,3 @@
-#include "render/renderer.h"
 #include "gryphon.h"
 #include "platform/platform.h"
 #include "render/shader.h"
