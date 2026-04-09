@@ -1,6 +1,5 @@
 # Prerequisites
 *.d
-.claude/
 
 # Object files
 *.o
