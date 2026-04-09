@@ -1,16 +1,22 @@
 #!/usr/bin/env bash
-set echo on
-
+config=${1:-debug}
 application="engine"
-generate_compile_commands=false
 
-cflags="-g -Wall -Wextra -O0"
-link_flags="-lgl -lX11"
+cflags="-g -Iinclude -Wall -Wextra -O0"
 
-obj_dir="obj"
-mkdir $obj_dir
-start=$(date +%s%3N)
-clang -c src/gryphon_unity.c $cflags $link_flags -o $obj_dir/gryphon.o
-ar rcs "lib${application}.a" $obj_dir/gryphon.o
-end=$(date +%s%3N)
-echo "$application build finished in $((end - start))ms"
+config=${1:-debug}
+
+if [ "$config" = "release" ]; then
+    cflags="-Iinclude -Wall -Wextra -O2"
+else
+    cflags="-Iinclude -Wall -Wextra -g -O0"
+fi
+
+build_dir="build"
+obj_dir="$build_dir/obj"
+
+mkdir -p $build_dir
+mkdir -p $obj_dir
+
+clang -c src/gryphon_unity.c $cflags -o $obj_dir/gryphon.o
+ar rcs "$build_dir/lib${application}.a" $obj_dir/gryphon.o
