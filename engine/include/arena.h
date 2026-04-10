@@ -4,6 +4,13 @@
 
 #define ARENA_DEFAULT_ALIGNMENT 16
 
-b8 is_power_of_two(uptr x);
+typedef struct {
+	u8 *data;
+	u64 capacity;
+	u64 offset;
+} arena;
+
+b8 is_power_of_two(usize addr);
+uptr align_forward(usize addr, usize align);
 
 #endif // !ARENA_H
